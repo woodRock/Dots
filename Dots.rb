@@ -131,6 +131,10 @@ module Lib
   def has_right?(current, dims)
       return (square_indexes(current + 1, dims)[0] == square_indexes(current, dims)[0] + 1 && current + 1 <= dims**2)
   end
+
+  def is_game_over?(squares_drawn,dims)
+    return (squares_drawn >= dims*dims)
+  end
 end
 
 include Lib
@@ -171,8 +175,8 @@ on :key_down do |k|
     valid_key = input.keys.include? k.key
     next if current == -1
     counter += make_move(current, dims, k.key, input, is_line, counter, p1_squares, p2_squares) if valid_key
-    squares_drawn = p1_squares.length+p2_squares.length
-    game_won = true if (squares_drawn >= dims*dims)
+    squares_drawn = p1_squares.length + p2_squares.length
+    game_won = true if is_game_over?(squares_drawn,dims)
 end
 
 update do
@@ -185,10 +189,9 @@ update do
         squares[s].color = p1_col if square_indexes && p1
         squares[s].color = p2_col if square_indexes && p2
     end
-    p1_move = is_p1_move?(counter)
-    not_square = !is_square?(square_indexes(current, dims), is_line)
-    squares[current].color = p1_hover_col if not_square && p1_move
-    squares[current].color = p2_hover_col if not_square && !p1_move
+    if not is_square?(square_indexes(current, dims), is_line)
+      squares[current].color = is_p1_move?(counter) ? p1_hover_col : p2_hover_col
+    end
     draw_lines(is_line, lines)
     game_over(p1_col, p2_col, p1_squares, p2_squares, squares) if game_won
 end
