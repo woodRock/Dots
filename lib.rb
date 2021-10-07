@@ -6,14 +6,22 @@ module Lib
   def board(_is_line, dims, squares, lines)
     pad = 15
     sq_size = 50
+
+    # Generic window properties
     set title: 'Dots and Boxes'
     set height: pad + dims * sq_size
     set width: pad + dims * sq_size
     set background: 'white'
     set resizable: false
+
+    # Directions map to vectors.
     dir = { 'up' => 0, 'left' => 1, 'right' => 2, 'down' => 3 }
+
+    # Offset
     off = 0
     count = 0
+
+    # Initialize all the squares.
     (0...dims).each do |y|
       (0...dims).each do |x|
         off = 5 if x.zero? && y.zero?
@@ -23,6 +31,8 @@ module Lib
         count += 1
       end
     end
+
+    # Fill in the squares.
     squares.keys.each do |s|
       # No squares have been won yet.
       next if s == -1
@@ -39,7 +49,7 @@ module Lib
       l_map['up'] = [_x + off, _y, sq_size - off, off]
       l_map['left'] = [_x, _y + off, off, sq_size - off]
       l_map['right'] = [_x + sq_size, _y + off, off, sq_size - off]
-      l_map['down'] = [_x, _y + sq_size, sq_size - off, off]
+      l_map['down'] = [_x + off, _y + sq_size, sq_size - off, off]
 
       # Work out location of the lines in each direction (i.e up, left, right, down)
       dir.keys.each do |d|
@@ -64,9 +74,11 @@ module Lib
     return - 1 if num.negative? || num > dims**2 - 1
 
     c = num + ((num - (num % dims)) / dims) * (dims + 1)
-    [0 + c, dims + c, dims + 1 + c, dims * 2 + 1 + c]
+    [c, dims + c, dims + 1 + c, dims * 2 + 1 + c]
   end
 
+  # Returns the index positions that correspond to a given line.
+  # Given the list of square indexes and direction, and direction to vector mapping.
   def index_of_line(square_indexes, dir, directions)
     # Retrieve the index of a line.
     square_indexes[directions[dir]]
