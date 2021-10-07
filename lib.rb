@@ -24,7 +24,7 @@ module Lib
     # Initialize all the squares.
     (0...dims).each do |y|
       (0...dims).each do |x|
-        off = 5 if x.zero? && y.zero?
+        off = 5 if x.zero? && y.zero? # 5px padding from top and left.
         _x = off + x * sq_size
         _y = off + y * sq_size
         squares[count] = Square.new(size: sq_size, color: 'green', x: _x, y: _y)
@@ -55,10 +55,10 @@ module Lib
       dir.keys.each do |d|
         # A line is rectangle.
         rect = Rectangle.new(
-          x: l_map[d][0],
-          y: l_map[d][1],
-          width: l_map[d][2],
-          height: l_map[d][3],
+          x: l_map[d][dir['up']],
+          y: l_map[d][dir['left']],
+          width: l_map[d][dir['right']],
+          height: l_map[d][dir['down']],
           color: 'white' # By default each line is white.
         )
         # Store the line in the lines array.
@@ -128,7 +128,7 @@ module Lib
     p2 << neighbour if neighbour_scored && !p1_move
     return 0 if scored or neighbour_scored or !valid
 
-    1 # Successful move, now next players turn.
+    1 # Regular move - valid and no squares won - now next players turn.
   end
 
   def game_over(p1_col, p2_col, p1_squares, p2_squares, squares)

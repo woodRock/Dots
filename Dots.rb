@@ -7,6 +7,12 @@ include Lib
 # Game board consists on dims x dims board.
 dims = 3
 
+# Colours for the game.
+p1_col = 'orange'
+p2_col = 'purple'
+p1_hover_col = '#FFF2E5'
+p2_hover_col = '#F5E5FF'
+
 # Starts with no lines drawn.
 is_line = Array.new(number_of_lines(dims)) { false }
 squares = { -1 => Square.new(size: 0) }
@@ -18,16 +24,12 @@ counter = 0
 # Flag for which square is chosen. Defaults to -1 for none.
 current = -1
 
+# Both players start with no squares.
 p1_squares = []
 p2_squares = []
 
 board(is_line, dims, squares, lines)
 game_won = false
-
-p1_col = 'orange'
-p2_col = 'purple'
-p1_hover_col = '#FFF2E5'
-p2_hover_col = '#F5E5FF'
 
 def reset
   # TODO: implement me!
