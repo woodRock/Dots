@@ -1,6 +1,5 @@
 #!/usr/bin/ruby
 
-require 'ruby2d'
 load 'lib.rb'
 include Lib
 
@@ -71,7 +70,7 @@ on :key_down do |k|
   squares_drawn = p1_squares.length + p2_squares.length
 
   # Has move won the game.
-  game_won = true if is_game_over?(squares_drawn, dims)
+  game_won = true if game_over(squares_drawn, dims)
 end
 
 # Update handler, runs each click of the game loop.
@@ -90,13 +89,13 @@ update do
 
   # Hover animation.
   unless is_square?(square_indexes(current, dims), is_line)
-    squares[current].color = is_p1_move?(counter) ? p1_hover_col : p2_hover_col
+    squares[current].color = p1_move(counter) ? p1_hover_col : p2_hover_col
   end
 
   draw_lines(is_line, lines)
 
   # Show gameover screen, i.e. all squares turn winning players colour.
-  game_over(p1_col, p2_col, p1_squares, p2_squares, squares) if game_won
+  end_game(p1_col, p2_col, p1_squares, p2_squares, squares) if game_won
 end
 
 show

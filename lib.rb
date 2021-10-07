@@ -8,7 +8,7 @@ module Lib
     sq_size = 50
 
     # Generic window properties
-    set title: 'Dots and Boxes'
+    set title: 'Dots'
     set height: pad + dims * sq_size
     set width: pad + dims * sq_size
     set background: 'white'
@@ -85,7 +85,7 @@ module Lib
   end
 
   def add_line(line, is_line)
-    valid = !is_line[line]
+    valid = valid_move(line, is_line)
     is_line[line] = true if valid
     valid # See if move was successful.
   end
@@ -99,8 +99,8 @@ module Lib
   end
 
   def neighbour(current, dir, dims)
-    return current - 1 if dir.eql?('a') && has_left?(current, dims)
-    return current + 1 if dir.eql?('d') && has_right?(current, dims)
+    return current - 1 if dir.eql?('a') && left_neighbour(current, dims)
+    return current + 1 if dir.eql?('d') && right_neighbour(current, dims)
     return current - dims if dir.eql?('w') && (current - dims >= 0)
     return current + dims if dir.eql?('s') && (current + dims < dims**2)
 
@@ -112,7 +112,7 @@ module Lib
 
     lines = square_indexes(current, dims)
     line = index_of_line(lines, key, map)
-    valid = is_valid_move?(line, is_line)
+    valid = valid_move(line, is_line)
     before = is_square?(square_indexes(current, dims), is_line)
     neighbour = neighbour(current, key, dims)
     before_neighbour = is_square?(square_indexes(neighbour, dims), is_line)
@@ -121,7 +121,7 @@ module Lib
     after_neighbour = is_square?(square_indexes(neighbour, dims), is_line)
     scored = !before && after
     neighbour_scored = !before_neighbour && after_neighbour
-    p1_move = is_p1_move?(counter)
+    p1_move = p1_move(counter)
     p1 << current if scored && p1_move
     p1 << neighbour if neighbour_scored && p1_move
     p2 << current if scored && !p1_move
@@ -131,7 +131,7 @@ module Lib
     1 # Regular move - valid and no squares won - now next players turn.
   end
 
-  def game_over(p1_col, p2_col, p1_squares, p2_squares, squares)
+  def end_game(p1_col, p2_col, p1_squares, p2_squares, squares)
     # Compute result of the game.
     p1_won = p1_squares.length > p2_squares.length
     p2_won = p1_squares.length < p2_squares.length
@@ -156,27 +156,27 @@ module Lib
     res # True if all filled, false otherwise.
   end
 
-  def is_valid_move?(line, is_line)
+  def valid_move(line, is_line)
     # Move is not valid if a line does not exist.
     !is_line[line]
   end
 
-  def is_p1_move?(counter)
+  def p1_move(counter)
     # Game counter starts at 0. If even, player 1's turn.
     counter.even?
   end
 
-  def has_left?(current, dims)
+  def left_neighbour(current, dims)
     # Checks if a square has a left neighbour.
     (square_indexes(current - 1, dims)[0] == square_indexes(current, dims)[0] - 1 && current - 1 >= 0)
   end
 
-  def has_right?(current, dims)
+  def right_neighbour(current, dims)
     # Checks if a square has a right neighbour.
     (square_indexes(current + 1, dims)[0] == square_indexes(current, dims)[0] + 1 && current + 1 <= dims**2)
   end
 
-  def is_game_over?(squares_drawn, dims)
+  def game_over(squares_drawn, dims)
     # Game over when all squares are filled.
     (squares_drawn >= dims * dims)
   end
